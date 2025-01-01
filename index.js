@@ -46,7 +46,7 @@ async function signup(email, password) {
         // Send verification email
         await sendEmailVerification(userCredential.user);
         userState.state = "emailVerificationSent";
-        
+
         return { message:"all good"};
     } catch (error) {
         console.error('Error during login:', error.message);
@@ -70,35 +70,8 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-// Endpoint to Verify Token (using Admin SDK)
-app.post('/verify-token', async (req, res) => {
-    const { token } = req.body;
 
-    if (!token) {
-        return res.status(400).json({ error: 'Token is required' });
-    }
 
-    try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        return res.status(200).json({ uid: decodedToken.uid });
-    } catch (error) {
-        console.error('Error verifying token:', error.message);
-        return res.status(500).json({ error: error.message });
-    }
-});
-
-// Endpoint to Fetch User Data (using Admin SDK)
-app.get('/user/:uid', async (req, res) => {
-    const { uid } = req.params;
-
-    try {
-        const userRecord = await admin.auth().getUser(uid);
-        return res.status(200).json(userRecord);
-    } catch (error) {
-        console.error('Error fetching user data:', error.message);
-        return res.status(500).json({ error: error.message });
-    }
-});
 
 // Start the Server
 app.listen(PORT, () => {
