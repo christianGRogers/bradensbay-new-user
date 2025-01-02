@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { initializeApp: initializeClientApp } = require('firebase/app');
-const { getAuth } = require('firebase/auth');
+const { getAuth, createUserWithEmailAndPassword, sendEmailVerification } = require('firebase/auth');
 const admin = require('firebase-admin');
 
 const PORT = 3006;
@@ -41,20 +41,18 @@ async function signup(email, password) {
     try {
         // Create user with email and password
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        userState.uid = userCredential.user.uid;
 
         // Send verification email
         await sendEmailVerification(userCredential.user);
-        userState.state = "emailVerificationSent";
 
-        return { message:"all good"};
+        return { message: "all good" };
     } catch (error) {
-        console.error('Error during login:', error.message);
+        console.error('Error during signup:', error.message);
         throw error;
     }
 }
 
-// Endpoint to Sign In (using Client SDK)
+// Endpoint to Sign Up (using Client SDK)
 app.post('/signup', async (req, res) => {
     const { email, password } = req.body;
 
@@ -69,9 +67,6 @@ app.post('/signup', async (req, res) => {
         return res.status(500).json({ error: error.message }); // Return detailed error message
     }
 });
-
-
-
 
 // Start the Server
 app.listen(PORT, () => {
